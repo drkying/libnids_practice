@@ -39,7 +39,7 @@ typedef struct _MAC_FRAME_HEADER
     char m_cSrcMacAddress[6];    //源mac地址
     short m_cType;            //上一层协议类型，如0x0800代表上一层是IP协议，0x0806为arp
 };
-char* addres(struct tuple4 addr)
+char* addres(struct tuple4 addr)	//Convert hexadecimal numbers to ip addresses
 {
     static char buf[256];
     printf("\n");
@@ -50,7 +50,7 @@ char* addres(struct tuple4 addr)
     sprintf(buf + strlen(buf), ":%i", addr.dest);
     return buf;
 }
-static void hexDump(const void* p, int size)
+static void hexDump(const void* p, int size)	//Output like tcpdump -X
 {
     const uint8_t* c = p;
     int j = 0;
@@ -87,7 +87,7 @@ static void hexDump(const void* p, int size)
         j += 16;
     }
 }
-void *print(void *arg)
+void *print(void *arg)	//a thread for output
 {
     while(flag==0)
     {
@@ -106,7 +106,7 @@ void *print(void *arg)
 
 	}
 }
-void callback_nox(struct ip* a_packet)
+void callback_nox(struct ip* a_packet)	//Only output ip address
 {
     if(a_packet->ip_p==6)
     {
@@ -148,7 +148,7 @@ void callback_nox(struct ip* a_packet)
     }
 
 }
-void callback_withx(struct ip* a_packet, int len)
+void callback_withx(struct ip* a_packet, int len)//Output like tcpdump -X
 {
     if(a_packet->ip_p==6)
     {
@@ -209,11 +209,10 @@ void callback_withx(struct ip* a_packet, int len)
 
 
 }
-void sum_as()
+void sum_as()	//Output statistics before exiting the program
 {
     flag=1;
     pthread_join(tid,NULL);
-    printf("\n(hello)\n");
 
     struct pcap_stat* sta;
 
@@ -258,7 +257,7 @@ int main(int argc, char* argv[])
     }
     else
     {
-        nids_register_ip(callback_withx);
+        nids_register_ip(callback_nox);
     }
 
     nids_run();
